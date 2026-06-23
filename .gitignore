@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+.claude/
+.vscode/
+screenshot-*.png
+INSTRUCCIONES.md
+web-libreria-aragon.html
