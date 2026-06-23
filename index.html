@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Barbería de Víctor — Huesca</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #060504;
+      --bg-2:      #0e0b08;
+      --bg-card:   #181310;
+      --bg-hover:  #221c16;
+      --gold:      #c8902e;
+      --gold-lt:   #e8b04a;
+      --cream:     #f2e6d4;
+      --cream-dim: #9a8570;
+      --border:    rgba(200,144,46,.13);
+      --border-b:  rgba(200,144,46,.32);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); }
+
+    /* ══ NAV ══ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 300;
+      padding: 24px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: padding .4s, background .4s, border .4s;
+    }
+    nav.scrolled {
+      padding: 14px 48px;
+      background: rgba(6,5,4,.92);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); text-decoration: none;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .nav-logo small {
+      font-size: .52rem; letter-spacing: .3em;
+      color: var(--cream-dim); font-family: 'Inter', sans-serif;
+      font-weight: 400; text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      color: var(--cream-dim); text-decoration: none;
+      font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+      transition: color .3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--cream); text-decoration: none;
+      border: 1px solid var(--border-b); padding: 9px 20px;
+      transition: all .3s;
+    }
+    .nav-cta:hover { border-color: var(--gold); color: var(--gold); }
+    @media (max-width: 768px) {
+      nav { padding: 18px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      .nav-links, .nav-cta { display: none; }
+    }
+
+    /* ══ HERO SCENE ══ */
+    .scene-hero { height: 500vh; position: relative; }
+    .scene-sticky {
+      position: sticky; top: 0;
+      height: 100vh; width: 100%; overflow: hidden;
+    }
+
+    /* Exterior */
+    .ext-layer {
+      position: absolute; inset: 0; z-index: 1;
+      will-change: opacity;
+    }
+    .ext-img {
+      position: absolute; inset: -8%;
+      width: 116%; height: 116%;
+      object-fit: cover; object-position: center;
+      transform-origin: center center;
+      will-change: transform;
+      filter: brightness(.8);
+    }
+    .ext-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(6,5,4,.25) 0%,
+        rgba(6,5,4,.15) 45%,
+        rgba(6,5,4,.85) 100%);
+    }
+    .ext-content {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      padding-bottom: 72px; text-align: center;
+    }
+    .ext-eyebrow {
+      font-size: .62rem; letter-spacing: .42em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 14px;
+      opacity: 0; animation: fadeUp .8s .5s forwards;
+    }
+    .ext-h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--cream); line-height: 1; margin-bottom: 8px;
+      opacity: 0; animation: fadeUp .8s .8s forwards;
+    }
+    .ext-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.55rem);
+      color: var(--gold-lt); margin-bottom: 44px;
+      opacity: 0; animation: fadeUp .8s 1.1s forwards;
+    }
+    .scroll-hint {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      opacity: 0; animation: fadeIn .8s 2s forwards;
+    }
+    .scroll-hint span {
+      font-size: .58rem; letter-spacing: .36em; text-transform: uppercase;
+      color: var(--cream-dim);
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 1.8s ease-in-out infinite;
+    }
+
+    /* Interior */
+    .int-layer {
+      position: absolute; inset: 0; z-index: 2;
+      opacity: 0; will-change: opacity;
+    }
+    .int-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 25%, rgba(80,50,8,.55) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 85%, rgba(35,18,4,.9) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 85%, rgba(35,18,4,.9) 0%, transparent 45%),
+        linear-gradient(to bottom, #1c0e04 0%, #0d0804 35%, #080503 100%);
+    }
+    .int-ceiling {
+      position: absolute; top: 0; left: 0; right: 0; height: 17%;
+      background: linear-gradient(to bottom, #1e1208, #140d06);
+      border-bottom: 1px solid rgba(200,144,46,.05);
+    }
+    /* Pendant lights */
+    .pendant {
+      position: absolute; top: 0;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .pendant-l { left: 26%; }
+    .pendant-r { right: 26%; }
+    .pendant-cord { width: 1px; height: 72px; background: rgba(200,144,46,.28); }
+    .pendant-shade {
+      width: 48px; height: 28px;
+      background: linear-gradient(to bottom, #2c1e0a, #1a1206);
+      border: 1px solid rgba(200,144,46,.25);
+      border-radius: 4px 4px 50% 50%;
+    }
+    .pendant-glow {
+      position: absolute; top: 72px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,144,46,.16) 0%, transparent 70%);
+      left: 50%; transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    /* Mirror / info frame */
+    .mirror-frame {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(520px, 78vw);
+      border: 1px solid var(--border-b);
+      background: linear-gradient(135deg, rgba(22,14,6,.97), rgba(10,7,3,.99));
+      padding: 44px 50px;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center;
+    }
+    .mirror-frame::before {
+      content: '';
+      position: absolute; inset: 6px;
+      border: 1px solid rgba(200,144,46,.07);
+      pointer-events: none;
+    }
+    .m-ornament {
+      font-size: .58rem; letter-spacing: .5em; text-transform: uppercase;
+      color: var(--gold); opacity: .7; margin-bottom: 14px;
+    }
+    .m-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(1.7rem, 4vw, 3rem);
+      font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--cream); line-height: 1; margin-bottom: 4px;
+    }
+    .m-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(.9rem, 2vw, 1.35rem);
+      color: var(--gold); margin-bottom: 20px;
+    }
+    .m-line { width: 38px; height: 1px; background: var(--gold); margin: 0 auto 16px; }
+    .m-since {
+      font-size: .58rem; letter-spacing: .26em; text-transform: uppercase;
+      color: var(--cream-dim); margin-bottom: 28px;
+    }
+    .m-services { list-style: none; width: 100%; margin-bottom: 30px; }
+    .m-svc {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+      font-size: .84rem;
+    }
+    .m-svc:last-child { border-bottom: 0; }
+    .m-svc .sn { color: var(--cream); }
+    .m-svc .sp {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; color: var(--gold);
+    }
+    .m-cta {
+      display: inline-block;
+      background: var(--gold); color: var(--bg);
+      font-family: 'Oswald', sans-serif;
+      font-size: .76rem; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase;
+      text-decoration: none; padding: 12px 28px;
+      transition: background .3s, transform .3s;
+    }
+    .m-cta:hover { background: var(--gold-lt); transform: translateY(-2px); }
+
+    /* Barber pole */
+    .bp-wrap {
+      position: absolute;
+      top: 24%; left: calc(50% - 300px);
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .bp-cap {
+      width: 24px; height: 10px;
+      background: linear-gradient(to bottom, #d0d0d0, #a8a8a8);
+      border-radius: 3px 3px 0 0;
+    }
+    .bp-body {
+      width: 24px; height: 130px;
+      overflow: hidden; position: relative;
+      border-left: 1px solid rgba(200,200,200,.2);
+      border-right: 1px solid rgba(200,200,200,.2);
+    }
+    .bp-stripes {
+      position: absolute;
+      top: -100%; left: -100%;
+      width: 300%; height: 300%;
+      background: repeating-linear-gradient(
+        -45deg,
+        #c82222 0px, #c82222 8px,
+        #f0f0f0 8px, #f0f0f0 16px,
+        #1a2f8b 16px, #1a2f8b 24px
+      );
+      animation: poleAnim 2s linear infinite;
+    }
+    @keyframes poleAnim {
+      from { transform: translateY(0); }
+      to   { transform: translateY(33.94px); }
+    }
+    .bp-ball {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff, #aaa);
+    }
+
+    /* Chair silhouette */
+    .chair-wrap {
+      position: absolute;
+      bottom: 23%; left: 50%; transform: translateX(-50%);
+      width: 160px; opacity: .22;
+      pointer-events: none;
+    }
+
+    /* Floor */
+    .int-floor {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 24%;
+      background: linear-gradient(to bottom, #100a05, #080503);
+    }
+    .int-floor::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,144,46,.12), transparent);
+    }
+    .int-floor::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(200,144,46,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,144,46,.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    /* Interior reveal elements */
+    .ir {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+
+    /* Progress */
+    .scene-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px; background: rgba(255,255,255,.05); z-index: 10;
+    }
+    .scene-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(to right, var(--gold), var(--gold-lt));
+      transition: width .05s linear;
+    }
+
+    /* Mobile hero */
+    @media (max-width: 768px) {
+      .scene-hero { height: 100vh; }
+      .scene-sticky { position: relative; }
+      .int-layer { display: none !important; }
+      .ext-layer { opacity: 1 !important; }
+      .ext-content { justify-content: center; padding-bottom: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scene-hero { height: 100vh; }
+    }
+
+    /* ══ SECTION BASE ══ */
+    .sec { padding: 112px 48px; max-width: 1200px; margin: 0 auto; }
+    .sec-full { padding: 100px 0; }
+    .sec-inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+    .eyebrow {
+      font-size: .63rem; letter-spacing: .42em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 14px;
+    }
+    .sec-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.6rem);
+      font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+      line-height: 1.06; margin-bottom: 16px;
+    }
+    .sec-title em {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-weight: 300;
+      letter-spacing: .02em; color: var(--gold); text-transform: none;
+    }
+    .gold-line { width: 44px; height: 1px; background: var(--gold); margin-bottom: 40px; }
+    @media (max-width: 768px) {
+      .sec { padding: 80px 24px; }
+      .sec-inner { padding: 0 24px; }
+      .sec-full { padding: 80px 0; }
+    }
+
+    /* ══ SERVICIOS ══ */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+    }
+    .svc-card {
+      padding: 44px 32px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      transition: background .4s;
+    }
+    .svc-card:last-child { border-right: 0; }
+    .svc-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 2px; background: var(--gold);
+      transition: width .4s ease;
+    }
+    .svc-card:hover { background: var(--bg-hover); }
+    .svc-card:hover::after { width: 100%; }
+    .svc-icon { font-size: 1.7rem; margin-bottom: 18px; display: block; }
+    .svc-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: var(--cream); margin-bottom: 10px;
+    }
+    .svc-desc {
+      font-size: .8rem; color: var(--cream-dim);
+      line-height: 1.75; margin-bottom: 22px;
+    }
+    .svc-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; color: var(--gold);
+    }
+    .svc-price small {
+      font-size: .65rem; font-family: 'Inter', sans-serif;
+      color: var(--cream-dim); letter-spacing: .1em; text-transform: uppercase;
+    }
+    @media (max-width: 900px) {
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .svc-card:nth-child(2) { border-right: 0; }
+      .svc-card:nth-child(1),
+      .svc-card:nth-child(2) { border-bottom: 1px solid var(--border); }
+    }
+    @media (max-width: 480px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .svc-card { border-right: 0; border-bottom: 1px solid var(--border); }
+      .svc-card:last-child { border-bottom: 0; }
+    }
+
+    /* ══ SOBRE VÍCTOR ══ */
+    .about-wrap {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .about-text p {
+      color: var(--cream-dim); line-height: 2;
+      margin-bottom: 18px; font-size: .93rem;
+    }
+    .badges {
+      display: flex; gap: 18px; margin-top: 40px; flex-wrap: wrap;
+    }
+    .badge {
+      padding: 18px 24px;
+      border: 1px solid var(--border); background: var(--bg-card);
+      display: flex; flex-direction: column; align-items: center;
+      min-width: 90px;
+    }
+    .badge-n {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1;
+    }
+    .badge-l {
+      font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--cream-dim); margin-top: 4px; text-align: center;
+    }
+    .about-img-col { position: relative; }
+    .about-img-wrap {
+      width: 100%; aspect-ratio: 4/5; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .about-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: grayscale(15%) brightness(.88);
+      transition: filter .6s, transform .6s;
+    }
+    .about-img-wrap:hover img {
+      filter: grayscale(0%) brightness(.95);
+      transform: scale(1.03);
+    }
+    .about-accent {
+      position: absolute; bottom: -20px; right: -20px;
+      width: 96px; height: 96px;
+      border: 1px solid var(--border-b); background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .accent-inner { text-align: center; }
+    .accent-inner strong {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.5rem; font-weight: 700; color: var(--gold); display: block;
+    }
+    .accent-inner span {
+      font-size: .52rem; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--cream-dim);
+    }
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 52px; }
+      .about-accent { display: none; }
+    }
+
+    /* ══ HORARIO & CONTACTO ══ */
+    .hc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+    .sched {
+      width: 100%; border-collapse: collapse; margin-top: 32px;
+    }
+    .sched tr { border-bottom: 1px solid var(--border); }
+    .sched tr:last-child { border-bottom: 0; }
+    .sched td { padding: 12px 0; font-size: .88rem; }
+    .sched td:first-child { color: var(--cream-dim); }
+    .sched td:last-child {
+      text-align: right; color: var(--cream);
+      font-family: 'Oswald', sans-serif; letter-spacing: .04em;
+    }
+    .sched tr.off td { opacity: .4; }
+    .contact-list { list-style: none; margin-top: 32px; }
+    .ci {
+      display: flex; align-items: center; gap: 16px;
+      padding: 13px 0; border-bottom: 1px solid var(--border);
+      text-decoration: none; color: var(--cream); transition: color .3s;
+    }
+    .ci:last-child { border-bottom: 0; }
+    .ci:hover { color: var(--gold); }
+    .ci-ico {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: .9rem;
+    }
+    .ci-info strong {
+      display: block; font-size: .58rem; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--cream-dim);
+      font-weight: 400; margin-bottom: 2px;
+    }
+    .ci-info span { font-size: .9rem; }
+    .cta-box {
+      margin-top: 44px; padding: 34px;
+      border: 1px solid var(--border); background: var(--bg-card);
+      text-align: center;
+    }
+    .cta-box h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem; letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .cta-box p {
+      font-size: .83rem; color: var(--cream-dim);
+      line-height: 1.72; margin-bottom: 26px;
+    }
+    .btn-gold {
+      display: inline-block;
+      background: var(--gold); color: var(--bg);
+      font-family: 'Oswald', sans-serif;
+      font-size: .78rem; font-weight: 600;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none; padding: 13px 30px;
+      margin: 4px; transition: all .3s;
+    }
+    .btn-gold:hover { background: var(--gold-lt); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-block;
+      border: 1px solid var(--border-b); color: var(--cream);
+      font-family: 'Oswald', sans-serif;
+      font-size: .78rem; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none; padding: 13px 30px;
+      margin: 4px; transition: all .3s;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    @media (max-width: 900px) { .hc-grid { grid-template-columns: 1fr; gap: 56px; } }
+
+    /* ══ INSTAGRAM ══ */
+    .ig-section {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      padding: 80px 24px; text-align: center;
+    }
+    .ig-link {
+      display: inline-flex; align-items: center; gap: 14px;
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 600;
+      letter-spacing: .08em; color: var(--cream);
+      text-decoration: none;
+      border: 1px solid var(--border); padding: 16px 36px;
+      margin-top: 22px; transition: all .4s;
+    }
+    .ig-link:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-3px); }
+    .ig-ico {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700;
+    }
+
+    /* ══ FOOTER ══ */
+    footer {
+      max-width: 1200px; margin: 0 auto; padding: 36px 48px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 24px; flex-wrap: wrap;
+    }
+    .f-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: .88rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--gold);
+    }
+    .f-nav { display: flex; gap: 24px; }
+    .f-nav a {
+      font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--cream-dim); text-decoration: none; transition: color .3s;
+    }
+    .f-nav a:hover { color: var(--gold); }
+    .f-copy { font-size: .68rem; color: var(--cream-dim); }
+    @media (max-width: 768px) {
+      footer { flex-direction: column; text-align: center; padding: 28px 24px; }
+      .f-nav { flex-wrap: wrap; justify-content: center; }
+    }
+
+    /* ══ ANIMATIONS ══ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50%       { opacity: .3; transform: scaleY(.4); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal-l {
+      opacity: 0; transform: translateX(-30px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal-r {
+      opacity: 0; transform: translateX(30px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.in, .reveal-l.in, .reveal-r.in {
+      opacity: 1; transform: translate(0);
+    }
+    .d1 { transition-delay: .1s; } .d2 { transition-delay: .22s; }
+    .d3 { transition-delay: .34s; } .d4 { transition-delay: .46s; }
+    .d5 { transition-delay: .58s; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#inicio" class="nav-logo">
+    La Barbería
+    <small>de Víctor · Huesca</small>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a href="tel:+34974228162" class="nav-cta">974 228 162</a>
+</nav>
+
+<!-- HERO SCENE TRANSITION -->
+<section class="scene-hero" id="scene-hero">
+  <div class="scene-sticky" id="inicio">
+
+    <!-- EXTERIOR -->
+    <div class="ext-layer" id="extLayer">
+      <img src="assets/exterior.webp" alt="La Barbería de Víctor, Huesca" class="ext-img" id="extImg">
+      <div class="ext-overlay"></div>
+      <div class="ext-content">
+        <p class="ext-eyebrow">Desde 1990 · Huesca</p>
+        <h1 class="ext-h1">La Barbería<br>de Víctor</h1>
+        <p class="ext-sub">El arte del buen corte</p>
+        <div class="scroll-hint">
+          <span>Scroll</span>
+          <div class="scroll-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERIOR -->
+    <div class="int-layer" id="intLayer">
+      <div class="int-bg"></div>
+      <div class="int-ceiling"></div>
+
+      <!-- Pendant lights -->
+      <div class="pendant pendant-l">
+        <div class="pendant-cord"></div>
+        <div class="pendant-shade"></div>
+        <div class="pendant-glow"></div>
+      </div>
+      <div class="pendant pendant-r">
+        <div class="pendant-cord"></div>
+        <div class="pendant-shade"></div>
+        <div class="pendant-glow"></div>
+      </div>
+
+      <!-- Barber pole -->
+      <div class="bp-wrap">
+        <div class="bp-ball"></div>
+        <div class="bp-body"><div class="bp-stripes"></div></div>
+        <div class="bp-ball"></div>
+      </div>
+
+      <!-- Mirror / Info frame -->
+      <div class="mirror-frame">
+        <p class="m-ornament ir">✦ La Barbería ✦</p>
+        <h2 class="m-title ir">La Barbería</h2>
+        <p class="m-sub ir">de Víctor</p>
+        <div class="m-line ir"></div>
+        <p class="m-since ir">Huesca · Desde 1990</p>
+        <ul class="m-services">
+          <li class="m-svc ir"><span class="sn">Corte de pelo</span><span class="sp">15 €</span></li>
+          <li class="m-svc ir"><span class="sn">Arreglo de barba</span><span class="sp">Consultar</span></li>
+          <li class="m-svc ir"><span class="sn">Degradado</span><span class="sp">Consultar</span></li>
+          <li class="m-svc ir"><span class="sn">Afeitado clásico</span><span class="sp">Consultar</span></li>
+        </ul>
+        <a href="tel:+34974228162" class="m-cta ir">Llama ahora · 974 228 162</a>
+      </div>
+
+      <!-- Chair silhouette -->
+      <div class="chair-wrap">
+        <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+          <rect x="58" y="6" width="84" height="26" rx="6" fill="#c8902e" opacity=".55"/>
+          <rect x="44" y="30" width="112" height="94" rx="6" fill="#1e150a" stroke="#c8902e" stroke-width="1.5"/>
+          <rect x="28" y="122" width="144" height="38" rx="7" fill="#1e150a" stroke="#c8902e" stroke-width="1.5"/>
+          <rect x="14" y="118" width="28" height="12" rx="4" fill="#c8902e" opacity=".7"/>
+          <rect x="158" y="118" width="28" height="12" rx="4" fill="#c8902e" opacity=".7"/>
+          <rect x="48" y="196" width="104" height="9" rx="3" fill="#c8902e" opacity=".6"/>
+          <rect x="86" y="160" width="28" height="44" fill="#9a7040" opacity=".75"/>
+          <ellipse cx="100" cy="212" rx="58" ry="9" fill="#6a4e28" opacity=".65"/>
+        </svg>
+      </div>
+
+      <div class="int-floor"></div>
+    </div>
+
+    <div class="scene-bar"><div class="scene-fill" id="scFill"></div></div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="sec" id="servicios">
+  <p class="eyebrow reveal">Nuestros servicios</p>
+  <h2 class="sec-title reveal">El arte del<br><em>buen corte</em></h2>
+  <div class="gold-line reveal"></div>
+  <div class="services-grid">
+    <div class="svc-card reveal d1">
+      <span class="svc-icon">✂️</span>
+      <p class="svc-name">Corte de Pelo</p>
+      <p class="svc-desc">Corte clásico o moderno adaptado a tu estilo. Incluye lavado y peinado final.</p>
+      <p class="svc-price">15 € <small>/ servicio</small></p>
+    </div>
+    <div class="svc-card reveal d2">
+      <span class="svc-icon">🪒</span>
+      <p class="svc-name">Arreglo de Barba</p>
+      <p class="svc-desc">Perfilado y definición de barba con navaja y cuchilla de precisión.</p>
+      <p class="svc-price"><small>Consultar precio</small></p>
+    </div>
+    <div class="svc-card reveal d3">
+      <span class="svc-icon">💈</span>
+      <p class="svc-name">Degradado</p>
+      <p class="svc-desc">Fade perfecto con máquina, desde degradado suave hasta skin fade.</p>
+      <p class="svc-price"><small>Consultar precio</small></p>
+    </div>
+    <div class="svc-card reveal d4">
+      <span class="svc-icon">🛁</span>
+      <p class="svc-name">Afeitado Clásico</p>
+      <p class="svc-desc">Afeitado tradicional con toalla caliente, espuma y navaja barbera.</p>
+      <p class="svc-price"><small>Consultar precio</small></p>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE VÍCTOR -->
+<div class="about-wrap sec-full" id="nosotros">
+  <div class="sec-inner">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="eyebrow reveal">Sobre nosotros</p>
+        <h2 class="sec-title reveal">Un oficio,<br><em>una tradición</em></h2>
+        <div class="gold-line reveal"></div>
+        <p class="reveal d1">La Barbería de Víctor lleva más de tres décadas siendo un referente del buen corte en Huesca. Aquí no hay prisas: cada servicio se cuida desde el primer momento.</p>
+        <p class="reveal d2">Un local de barrio con nivel de ciudad. Ambiente clásico, trato cercano y el resultado que esperas. Puedes venir sin cita o llamar antes para asegurarte.</p>
+        <p class="reveal d3">Nos encontrarás en la Calle Ramón J. Sender, 5 — en el corazón de Huesca.</p>
+        <div class="badges reveal d4">
+          <div class="badge">
+            <span class="badge-n">+35</span>
+            <span class="badge-l">Años de<br>oficio</span>
+          </div>
+          <div class="badge">
+            <span class="badge-n" style="font-size:1.1rem;">Lun–Vie</span>
+            <span class="badge-l">8:30 – 14:00</span>
+          </div>
+          <div class="badge">
+            <span class="badge-n" style="font-size:1.1rem;">Sábado</span>
+            <span class="badge-l">9:00 – 13:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-img-col reveal-r">
+        <div class="about-img-wrap">
+          <img src="assets/exterior.webp" alt="Fachada La Barbería de Víctor">
+        </div>
+        <div class="about-accent">
+          <div class="accent-inner">
+            <strong>1990</strong>
+            <span>Desde</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HORARIO & CONTACTO -->
+<section class="sec" id="contacto">
+  <div class="hc-grid">
+    <div>
+      <p class="eyebrow reveal">Horario</p>
+      <h2 class="sec-title reveal">Cuándo<br><em>encontrarnos</em></h2>
+      <div class="gold-line reveal"></div>
+      <table class="sched reveal d1">
+        <tr><td>Lunes a viernes</td><td>8:30 — 14:00</td></tr>
+        <tr><td>Sábado</td><td>9:00 — 13:00</td></tr>
+        <tr class="off"><td>Domingo</td><td>Cerrado</td></tr>
+      </table>
+    </div>
+    <div>
+      <p class="eyebrow reveal">Contacto</p>
+      <h2 class="sec-title reveal">Reserva<br><em>tu cita</em></h2>
+      <div class="gold-line reveal"></div>
+      <ul class="contact-list">
+        <li><a href="tel:+34974228162" class="ci reveal d1">
+          <div class="ci-ico">☎</div>
+          <div class="ci-info"><strong>Teléfono</strong><span>974 228 162</span></div>
+        </a></li>
+        <li><a href="https://wa.me/34974228162" target="_blank" rel="noopener" class="ci reveal d2">
+          <div class="ci-ico">💬</div>
+          <div class="ci-info"><strong>WhatsApp</strong><span>974 228 162</span></div>
+        </a></li>
+        <li><a href="https://www.instagram.com/labarberiadevictor" target="_blank" rel="noopener" class="ci reveal d3">
+          <div class="ci-ico">📷</div>
+          <div class="ci-info"><strong>Instagram</strong><span>@labarberiadevictor</span></div>
+        </a></li>
+        <li><a href="https://maps.google.com/?q=Calle+Ramón+J+Sender+5+Huesca" target="_blank" rel="noopener" class="ci reveal d4">
+          <div class="ci-ico">📍</div>
+          <div class="ci-info"><strong>Dirección</strong><span>C. Ramón J. Sender, 5 · 22005 Huesca</span></div>
+        </a></li>
+      </ul>
+      <div class="cta-box reveal d5">
+        <h3>¿Listo para tu cita?</h3>
+        <p>Llámanos o escríbenos por WhatsApp y te atendemos enseguida.</p>
+        <a href="tel:+34974228162" class="btn-gold">Llamar ahora</a>
+        <a href="https://wa.me/34974228162" target="_blank" rel="noopener" class="btn-outline">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM -->
+<div class="ig-section">
+  <p class="eyebrow reveal">Síguenos</p>
+  <h3 class="sec-title reveal" style="display:inline-block;">Ve nuestro <em>trabajo</em></h3>
+  <br>
+  <a href="https://www.instagram.com/labarberiadevictor" target="_blank" rel="noopener" class="ig-link reveal">
+    <div class="ig-ico">IG</div>
+    @labarberiadevictor
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="f-logo">La Barbería de Víctor</span>
+  <nav class="f-nav" aria-label="Footer">
+    <a href="#servicios">Servicios</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+  <span class="f-copy">© 2026 · C. Ramón J. Sender, 5 · Huesca</span>
+</footer>
+
+<script>
+// NAV
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// SCENE TRANSITION
+(function () {
+  const hero    = document.getElementById('scene-hero');
+  const extL    = document.getElementById('extLayer');
+  const extImg  = document.getElementById('extImg');
+  const intL    = document.getElementById('intLayer');
+  const fill    = document.getElementById('scFill');
+  const irEls   = document.querySelectorAll('.ir');
+
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const reduced  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (isMobile || reduced) return;
+
+  // Initial states
+  irEls.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(18px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+  });
+
+  let ticking = false;
+
+  function update() {
+    const rect     = hero.getBoundingClientRect();
+    const scrolled = -rect.top;
+    const total    = hero.offsetHeight - window.innerHeight;
+    const p        = Math.max(0, Math.min(1, scrolled / total));
+
+    // Progress bar
+    fill.style.width = (p * 100) + '%';
+
+    // Exterior: zoom in (0 → 0.6)
+    const zp = Math.min(1, p / 0.6);
+    extImg.style.transform = 'scale(' + (1 + zp * 0.42) + ')';
+
+    // Crossfade (0.38 → 0.68)
+    const fp = Math.max(0, Math.min(1, (p - 0.38) / 0.30));
+    extL.style.opacity = 1 - fp;
+    intL.style.opacity = fp;
+
+    // Interior content stagger (0.62 → end)
+    irEls.forEach((el, i) => {
+      const start  = 0.62 + i * 0.035;
+      const elP    = Math.max(0, Math.min(1, (p - start) / 0.14));
+      el.style.opacity   = elP;
+      el.style.transform = 'translateY(' + ((1 - elP) * 16) + 'px)';
+    });
+
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
+
+  update();
+}());
+
+// SCROLL REVEAL
+const revEls = document.querySelectorAll('.reveal, .reveal-l, .reveal-r');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+revEls.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
