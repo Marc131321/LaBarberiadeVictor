@@ -80,10 +80,19 @@
       transition: all .3s;
     }
     .nav-cta:hover { border-color: var(--gold); color: var(--gold); }
+    .nav-cta-mob { display: none; }
     @media (max-width: 768px) {
       nav { padding: 18px 24px; }
       nav.scrolled { padding: 12px 24px; }
-      .nav-links, .nav-cta { display: none; }
+      .nav-links { display: none; }
+      .nav-cta-desk { display: none; }
+      .nav-cta-mob { display: inline; }
+      .nav-cta {
+        font-size: .62rem; padding: 8px 14px;
+        background: var(--gold); color: var(--bg);
+        border-color: var(--gold); letter-spacing: .1em;
+      }
+      .nav-cta:hover { background: var(--gold-lt); border-color: var(--gold-lt); color: var(--bg); transform: none; }
     }
 
     /* ══ HERO SCENE ══ */
@@ -669,7 +678,7 @@
     <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
-  <a href="tel:+34974228162" class="nav-cta">974 228 162</a>
+  <a href="tel:+34974228162" class="nav-cta"><span class="nav-cta-desk">974 228 162</span><span class="nav-cta-mob">Llamar ahora</span></a>
 </nav>
 
 <!-- HERO SCENE TRANSITION -->
