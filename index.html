@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="t5lSfszXm7BJYebVyIrxyqj3SNLcb5-7IaLGwYfQibA" />
   <title>La Barbería de Víctor — Huesca</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
@@ -52,13 +53,19 @@
       font-size: 1.1rem; font-weight: 600;
       letter-spacing: .12em; text-transform: uppercase;
       color: var(--gold); text-decoration: none;
-      display: flex; flex-direction: column; gap: 2px;
+      display: flex; align-items: center; gap: 12px;
     }
+    .nav-logo-text { display: flex; flex-direction: column; gap: 2px; }
     .nav-logo small {
       font-size: .52rem; letter-spacing: .3em;
       color: var(--cream-dim); font-family: 'Inter', sans-serif;
       font-weight: 400; text-transform: uppercase;
     }
+    .nav-logo-badge {
+      width: 40px; height: 40px; flex-shrink: 0;
+      transition: transform .4s ease;
+    }
+    .nav-logo:hover .nav-logo-badge { transform: rotate(15deg); }
     .nav-links { display: flex; gap: 36px; list-style: none; }
     .nav-links a {
       color: var(--cream-dim); text-decoration: none;
@@ -334,11 +341,10 @@
 
     /* Mobile hero */
     @media (max-width: 768px) {
-      .scene-hero { height: 100vh; }
-      .scene-sticky { position: relative; }
-      .int-layer { display: none !important; }
-      .ext-layer { opacity: 1 !important; }
+      .scene-hero { height: 300vh; }
       .ext-content { justify-content: center; padding-bottom: 0; }
+      .bp-wrap { display: none; }
+      .mirror-frame { padding: 28px 24px; width: min(520px, 92vw); }
     }
     @media (prefers-reduced-motion: reduce) {
       .scene-hero { height: 100vh; }
@@ -642,8 +648,21 @@
 <!-- NAV -->
 <nav id="nav">
   <a href="#inicio" class="nav-logo">
-    La Barbería
-    <small>de Víctor · Huesca</small>
+    <svg class="nav-logo-badge" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="19" stroke="#c8902e" stroke-width="1"/>
+      <circle cx="20" cy="20" r="15.5" stroke="#c8902e" stroke-width="0.5"/>
+      <path d="M13 13 L20 20 L27 13" stroke="#c8902e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13 27 L20 20 L27 27" stroke="#c8902e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="20" cy="20" r="1.5" fill="#c8902e"/>
+      <circle cx="11.5" cy="11.5" r="2.5" stroke="#c8902e" stroke-width="1"/>
+      <circle cx="11.5" cy="28.5" r="2.5" stroke="#c8902e" stroke-width="1"/>
+      <text x="20" y="9.5" font-family="serif" font-size="4" fill="#c8902e" text-anchor="middle">✦</text>
+      <text x="20" y="34.5" font-family="Inter,sans-serif" font-size="4" fill="#c8902e" text-anchor="middle" letter-spacing="1">1990</text>
+    </svg>
+    <span class="nav-logo-text">
+      La Barbería
+      <small>de Víctor · Huesca</small>
+    </span>
   </a>
   <ul class="nav-links">
     <li><a href="#servicios">Servicios</a></li>
@@ -890,9 +909,8 @@ window.addEventListener('scroll', () => {
   const fill    = document.getElementById('scFill');
   const irEls   = document.querySelectorAll('.ir');
 
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  const reduced  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (isMobile || reduced) return;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return;
 
   // Initial states
   irEls.forEach(el => {
